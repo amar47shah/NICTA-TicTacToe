@@ -2,6 +2,9 @@ module TicTacToe where
 
 import Data.List (intersperse)
 
+data Finished = Finished Board
+data Unfinished = Unfinished Board
+
 data Board = B { aa, ab, ac, ba, bb, bc, ca, cb, cc :: Cell }
 
 instance Show Board where
