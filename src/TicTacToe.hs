@@ -42,25 +42,40 @@ data Cell = Claimed Mark | Unclaimed
 
 instance Show Cell where
   show (Claimed m) = show m
-  show Unclaimed   = " "
+  show _           = " "
 
 data Mark = X | O deriving Show
 
 move :: Position -> Mark -> Unfinished -> Game
-move p m (Unfinished b)
-   | isFinished $ b' = Left  . Finished b' $ winner b' --inefficient, checks if finished and then again to get winner
-   | otherwise       = Right $ Unfinished b'
-  where b' = move' p m b
+move p m (Unfinished b) = game $ move' p m b
 
 move' :: Position -> Mark -> Board -> Board
 move' p m b =
   case b ! p of
     Unclaimed -> b // [(p, Claimed m)]
-    Claimed _ -> b
+    _         -> b
 
---wrong, just a placeholder
-isFinished :: Board -> Bool
-isFinished = const False
+game :: Board -> Game
+game b
+ | isWon        b = Left . Finished b $ winner b
+ | isAllClaimed b = Left $ Finished b Nothing
+ | otherwise      = Right $ Unfinished b
+
+isWon :: Board -> Bool
+isWon = any sameClaim . straights
+
+sameClaim :: [Cell] -> Bool
+sameClaim = undefined
+
+straights :: Board -> [[Cell]]
+straights = undefined
+
+isAllClaimed :: Board -> Bool
+isAllClaimed = all isClaimed . elems
+
+isClaimed :: Cell -> Bool
+isClaimed (Claimed _) = True
+isClaimed _           = False
 
 --wrong, just a placeholder
 winner :: Board -> Winner
