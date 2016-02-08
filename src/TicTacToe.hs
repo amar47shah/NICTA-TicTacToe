@@ -51,9 +51,9 @@ move' p m b =
 
 game :: Board -> Game
 game b
- | isWon  b   = Left . Finished b $ winner b
- | isFull b   = Left $ Finished b Nothing
- | otherwise  = Right $ Unfinished b
+ | isWon  b  = Left . Finished b $ winner b
+ | isFull b  = Left $ Finished b Nothing
+ | otherwise = Right $ Unfinished b
 
 isWon :: Board -> Bool
 isWon = any isClaimed . straights
