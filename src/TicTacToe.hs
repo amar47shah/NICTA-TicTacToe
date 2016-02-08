@@ -33,14 +33,12 @@ instance {-# OVERLAPPING #-} Show Board where
   show = unlines
        . intersperse bar
        . (intercalate " | " <$>)
-       . splitEvery dim
-       . (draw <$>)
-       . elems
-    where bar = concat $ "-" : replicate (pred dim) "-|--"
-
-draw :: Cell -> String
-draw (Just m) = show m
-draw _        = " "
+       . (drawCells <$>)
+       . rows
+    where bar :: String
+          bar = concat $ "-" : replicate (pred dim) "-|--"
+          drawCells :: Straight -> [String]
+          drawCells = (maybe " " show <$>)
 
 dim :: Coordinate
 dim = 3
@@ -97,12 +95,6 @@ start = Right $ Unfinished empty
 
 empty :: Board
 empty = listArray ((1, 1), (dim, dim)) $ repeat Nothing
-
-splitEvery :: Int -> [a] -> [[a]]
-splitEvery _ [] = []
-splitEvery n xs = first : splitEvery n rest
-      where
-  (first, rest) = splitAt n xs
 
 sample :: Game
 sample =  start >>=
