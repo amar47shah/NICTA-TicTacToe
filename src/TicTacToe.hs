@@ -18,8 +18,8 @@ start = Right $ Unfinished empty X
 move :: Position -> Unfinished -> Game
 move p (Unfinished b m) = game $ move' p m b
 
-playerAt :: Position -> Board -> Cell
-playerAt p b = b ! p
+playerAt :: Position -> Board -> Maybe Cell
+playerAt = flip (!?)
 
 isDraw :: Finished -> Bool
 isDraw = isNothing . whoWon
@@ -77,11 +77,19 @@ instance Show Cell where
 dim :: Coordinate
 dim = 3
 
+inBounds :: Coordinate -> Bool
+inBounds c = c `elem` [1..dim]
+
+(!?) :: Board -> Position -> Maybe Cell
+b !? (m, n)
+ | all inBounds [m, n] = Just $ b ! (m, n)
+ | otherwise           = Nothing
+
 move' :: Position -> Mark -> Board -> Unfinished
 move' p m b =
-  case b ! p of
-    Unclaimed -> Unfinished (b // [(p, Claimed m)]) $ opposite m
-    _         -> Unfinished b m
+  case b !? p of
+    Just Unclaimed -> Unfinished (b // [(p, Claimed m)]) $ opposite m
+    _              -> Unfinished b m
 
 opposite :: Mark -> Mark
 opposite X = O
