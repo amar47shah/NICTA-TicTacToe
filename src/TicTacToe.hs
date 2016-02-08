@@ -2,11 +2,44 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module TicTacToe where
+module TicTacToe (Mark (..), start, move, playerAt, isDraw, whoWon, sample) where
 
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.List (find, intercalate, intersperse)
-import Data.Maybe (fromMaybe, isJust)
+import Data.Maybe (fromMaybe, isJust, isNothing)
+
+-- Exported definitions
+
+data Mark = X | O deriving (Eq, Show)
+
+start :: Game
+start = Right $ Unfinished empty
+
+move :: Position -> Mark -> Unfinished -> Game
+move p m (Unfinished b) = game $ move' p m b
+
+playerAt :: Position -> Board -> Cell
+playerAt p b = b ! p
+
+isDraw :: Finished -> Bool
+isDraw = isNothing . whoWon
+
+whoWon :: Finished -> Winner
+whoWon (Finished _ w) = w
+
+sample :: Game
+sample =  start >>=
+  move (1, 1) X >>=
+  move (2, 2) O >>=
+  move (3, 1) X >>=
+  move (2, 1) O >>=
+  move (2, 3) X >>=
+  move (1, 2) O >>=
+  move (3, 2) X >>=
+  move (3, 3) O >>=
+  move (1, 3) X
+
+-- Private definitions
 
 type Game = Either Finished Unfinished
 data Finished = Finished Board Winner
@@ -17,7 +50,6 @@ type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 type Cell = Maybe Mark
 type Straight = [Cell]
-data Mark = X | O deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
@@ -42,9 +74,6 @@ instance {-# OVERLAPPING #-} Show Board where
 
 dim :: Coordinate
 dim = 3
-
-move :: Position -> Mark -> Unfinished -> Game
-move p m (Unfinished b) = game $ move' p m b
 
 move' :: Position -> Mark -> Board -> Board
 move' p m b =
@@ -92,20 +121,5 @@ winner b =
   find isClaimed (straights b) >>=
     (\s -> if isClaimedBy X s then Just X else Just O)
 
-start :: Game
-start = Right $ Unfinished empty
-
 empty :: Board
 empty = listArray ((1, 1), (dim, dim)) $ repeat Nothing
-
-sample :: Game
-sample =  start >>=
-  move (1, 1) X >>=
-  move (2, 2) O >>=
-  move (3, 1) X >>=
-  move (2, 1) O >>=
-  move (2, 3) X >>=
-  move (1, 2) O >>=
-  move (3, 2) X >>=
-  move (3, 3) O >>=
-  move (1, 3) X
