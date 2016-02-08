@@ -28,16 +28,16 @@ whoWon :: Finished -> Winner
 whoWon (Finished _ w) = w
 
 sample :: Game
-sample =  start >>=
-  move (1, 1) >>=
-  move (2, 2) >>=
-  move (3, 1) >>=
-  move (2, 1) >>=
-  move (2, 3) >>=
-  move (1, 2) >>=
-  move (3, 2) >>=
-  move (3, 3) >>=
-  move (1, 3)
+sample = start >>=
+   move (1, 1) >>=
+   move (2, 2) >>=
+   move (3, 1) >>=
+   move (2, 1) >>=
+   move (2, 3) >>=
+   move (1, 2) >>=
+   move (3, 2) >>=
+   move (3, 3) >>=
+   move (1, 3)
 
 -- Private definitions
 
