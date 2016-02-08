@@ -4,12 +4,9 @@
 
 module TicTacToe where
 
-import Control.Applicative (liftA2)
-import Control.Arrow ((***), (&&&))
-import Control.Monad (join)
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.List (find, intercalate, intersperse)
-import Data.Maybe (fromMaybe, isJust, listToMaybe)
+import Data.Maybe (fromMaybe, isJust)
 
 type Game = Either Finished Unfinished
 data Finished = Finished Board Winner
@@ -59,13 +56,13 @@ game b
  | otherwise  = Right $ Unfinished b
 
 isWon :: Board -> Bool
-isWon = any same . straights
+isWon = any isClaimed . straights
 
-same :: Straight -> Bool
-same = fromMaybe False
-     . uncurry (liftA2 (||))
-     . ((all (== X) <$>) *** (all (== O) <$>))
-     . (sequence &&& sequence)
+isClaimed :: Straight -> Bool
+isClaimed s = isClaimedBy X s || isClaimedBy O s
+
+isClaimedBy :: Mark -> Straight -> Bool
+isClaimedBy m = fromMaybe False . (all (== m) <$>) . sequence
 
 straights :: Board -> [Straight]
 straights b = concatMap ($ b) [rows, columns, diagonals]
@@ -88,7 +85,9 @@ isFull :: Board -> Bool
 isFull = all isJust . elems
 
 winner :: Board -> Winner
-winner = join . join . (listToMaybe <$>) . find same . straights
+winner b =
+  find isClaimed (straights b) >>=
+    (\s -> if isClaimedBy X s then Just X else Just O)
 
 start :: Game
 start = Right $ Unfinished empty
