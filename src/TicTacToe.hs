@@ -7,7 +7,7 @@ module TicTacToe where
 import Control.Applicative (liftA2)
 import Control.Arrow ((***), (&&&))
 import Control.Monad (join)
-import Data.Array
+import Data.Array (Array, (!), (//), elems, listArray)
 import Data.List (find, intercalate, intersperse)
 import Data.Maybe (fromMaybe, isJust, listToMaybe)
 
