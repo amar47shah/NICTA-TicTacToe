@@ -2,15 +2,13 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module TicTacToe (Mark (..), start, move, playerAt, isDraw, whoWon, sample) where
+module TicTacToe (start, move, playerAt, isDraw, whoWon, sample) where
 
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.List (find, intercalate, intersperse)
 import Data.Maybe (isNothing)
 
 -- Exported definitions
-
-data Mark = X | O deriving (Eq, Show)
 
 start :: Game
 start = Right $ Unfinished empty X
@@ -50,6 +48,7 @@ type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 type Straight = [Cell]
 data Cell = Unclaimed | Claimed Mark deriving Show
+data Mark = X | O deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
