@@ -68,16 +68,19 @@ instance {-# OVERLAPPING #-} Show Board where
        . ((draw <$>) <$>)
        . rows
     where bar :: String
-          bar = concat $ "-" : replicate (pred dim) "-|--"
+          bar = concat $ "-" : replicate (upper - lower) "-|--"
           draw :: Cell -> String
           draw (Claimed m) = show m
           draw _           = " "
 
-dim :: Coordinate
-dim = 3
+lower, upper :: Coordinate
+(lower, upper) = (1, 3)
+
+bounds :: [Coordinate]
+bounds = [lower..upper]
 
 inBounds :: Coordinate -> Bool
-inBounds c = c `elem` [1..dim]
+inBounds c = c `elem` bounds
 
 (!?) :: Board -> Position -> Maybe Cell
 b !? (m, n)
@@ -122,16 +125,16 @@ straights b = concatMap ($ b) [rows, columns, diagonals]
 
 rows :: Board -> [Straight]
 rows b =
-  [ [ b ! (m, n) | n <- [1..dim] ] | m <- [1..dim] ]
+  [ [ b ! (m, n) | n <- bounds ] | m <- bounds ]
 
 columns :: Board -> [Straight]
 columns b =
-  [ [ b ! (m, n) | m <- [1..dim] ] | n <- [1..dim] ]
+  [ [ b ! (m, n) | m <- bounds ] | n <- bounds ]
 
 diagonals :: Board -> [Straight]
 diagonals b =
-  [ [ b ! (m, n) | m <- [1..dim], n <- [1..dim], m == n ]
-  , [ b ! (m, n) | m <- [1..dim], n <- [1..dim], m + n == 1 + dim ]
+  [ [ b ! (m, n) | m <- bounds, n <- bounds, m == n ]
+  , [ b ! (m, n) | m <- bounds, n <- bounds, m + n == lower + upper ]
   ]
 
 isFull :: Board -> Bool
@@ -143,4 +146,4 @@ winner b =
     (\s -> if isAllClaimedBy X s then Just X else Just O)
 
 empty :: Board
-empty = listArray ((1, 1), (dim, dim)) $ repeat Unclaimed
+empty = listArray ((lower, lower), (upper, upper)) $ repeat Unclaimed
