@@ -6,7 +6,7 @@ module TicTacToe (Mark (..), start, move, playerAt, isDraw, whoWon, sample) wher
 
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.List (find, intercalate, intersperse)
-import Data.Maybe (fromMaybe, isJust, isNothing)
+import Data.Maybe (isNothing)
 
 -- Exported definitions
 
@@ -48,8 +48,8 @@ type Winner = Maybe Mark
 type Board = Array Position Cell
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
-type Cell = Maybe Mark
 type Straight = [Cell]
+data Cell = Unclaimed | Claimed Mark
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
@@ -65,12 +65,14 @@ instance {-# OVERLAPPING #-} Show Board where
   show = unlines
        . intersperse bar
        . (intercalate " | " <$>)
-       . (drawCells <$>)
+       . ((show <$>) <$>)
        . rows
     where bar :: String
           bar = concat $ "-" : replicate (pred dim) "-|--"
-          drawCells :: Straight -> [String]
-          drawCells = (maybe " " show <$>)
+
+instance Show Cell where
+  show (Claimed m) = show m
+  show _           = " "
 
 dim :: Coordinate
 dim = 3
@@ -78,8 +80,8 @@ dim = 3
 move' :: Position -> Mark -> Board -> Unfinished
 move' p m b =
   case b ! p of
-    Nothing -> Unfinished (b // [(p, Just m)]) $ opposite m
-    _       -> Unfinished b m
+    Unclaimed -> Unfinished (b // [(p, Claimed m)]) $ opposite m
+    _         -> Unfinished b m
 
 opposite :: Mark -> Mark
 opposite X = O
@@ -92,13 +94,21 @@ game u@(Unfinished b _)
  | otherwise = Right u
 
 isWon :: Board -> Bool
-isWon = any isClaimed . straights
+isWon = any isAllClaimed . straights
 
-isClaimed :: Straight -> Bool
-isClaimed s = isClaimedBy X s || isClaimedBy O s
+isAllClaimed :: Straight -> Bool
+isAllClaimed s = isAllClaimedBy X s || isAllClaimedBy O s
 
-isClaimedBy :: Mark -> Straight -> Bool
-isClaimedBy m = fromMaybe False . (all (== m) <$>) . sequence
+isAllClaimedBy :: Mark -> Straight -> Bool
+isAllClaimedBy m = all (isClaimedBy m)
+
+isClaimedBy :: Mark -> Cell -> Bool
+isClaimedBy _ Unclaimed    = False
+isClaimedBy m (Claimed m') = m == m'
+
+isClaimed :: Cell -> Bool
+isClaimed Unclaimed = False
+isClaimed _         = True
 
 straights :: Board -> [Straight]
 straights b = concatMap ($ b) [rows, columns, diagonals]
@@ -118,12 +128,12 @@ diagonals b =
   ]
 
 isFull :: Board -> Bool
-isFull = all isJust . elems
+isFull = all isClaimed . elems
 
 winner :: Board -> Winner
 winner b =
-  find isClaimed (straights b) >>=
-    (\s -> if isClaimedBy X s then Just X else Just O)
+  find isAllClaimed (straights b) >>=
+    (\s -> if isAllClaimedBy X s then Just X else Just O)
 
 empty :: Board
-empty = listArray ((1, 1), (dim, dim)) $ repeat Nothing
+empty = listArray ((1, 1), (dim, dim)) $ repeat Unclaimed
