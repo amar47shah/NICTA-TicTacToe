@@ -19,6 +19,9 @@ type Cell = Maybe Mark
 type Straight = [Cell]
 data Mark = X | O deriving (Eq, Show)
 
+instance {-# OVERLAPPING #-} Show Game where
+  show = either show show
+
 instance Show Finished where
   show (Finished b Nothing)  = "DRAW\n" ++ show b
   show (Finished b (Just m)) = "WINNER: " ++ show m ++ '\n' : show b
@@ -104,5 +107,5 @@ sample =  start >>=
   move (2, 3) X >>=
   move (1, 2) O >>=
   move (3, 2) X >>=
-  move (1, 3) O >>=
-  move (3, 3) X
+  move (3, 3) O >>=
+  move (1, 3) X
