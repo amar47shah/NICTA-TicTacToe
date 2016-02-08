@@ -13,10 +13,10 @@ import Data.Maybe (fromMaybe, isJust, isNothing)
 data Mark = X | O deriving (Eq, Show)
 
 start :: Game
-start = Right $ Unfinished empty
+start = Right $ Unfinished empty X
 
-move :: Position -> Mark -> Unfinished -> Game
-move p m (Unfinished b) = game $ move' p m b
+move :: Position -> Unfinished -> Game
+move p (Unfinished b m) = game $ move' p m b
 
 playerAt :: Position -> Board -> Cell
 playerAt p b = b ! p
@@ -29,21 +29,21 @@ whoWon (Finished _ w) = w
 
 sample :: Game
 sample =  start >>=
-  move (1, 1) X >>=
-  move (2, 2) O >>=
-  move (3, 1) X >>=
-  move (2, 1) O >>=
-  move (2, 3) X >>=
-  move (1, 2) O >>=
-  move (3, 2) X >>=
-  move (3, 3) O >>=
-  move (1, 3) X
+  move (1, 1) >>=
+  move (2, 2) >>=
+  move (3, 1) >>=
+  move (2, 1) >>=
+  move (2, 3) >>=
+  move (1, 2) >>=
+  move (3, 2) >>=
+  move (3, 3) >>=
+  move (1, 3)
 
 -- Private definitions
 
 type Game = Either Finished Unfinished
 data Finished = Finished Board Winner
-data Unfinished = Unfinished Board
+data Unfinished = Unfinished Board Mark
 type Winner = Maybe Mark
 type Board = Array Position Cell
 type Position = (Coordinate, Coordinate)
@@ -59,7 +59,7 @@ instance Show Finished where
   show (Finished b (Just m)) = "WINNER: " ++ show m ++ '\n' : show b
 
 instance Show Unfinished where
-  show (Unfinished b) = "Unfinished\n" ++ show b
+  show (Unfinished b m) = show m ++ " to play\n" ++ show b
 
 instance {-# OVERLAPPING #-} Show Board where
   show = unlines
@@ -75,17 +75,21 @@ instance {-# OVERLAPPING #-} Show Board where
 dim :: Coordinate
 dim = 3
 
-move' :: Position -> Mark -> Board -> Board
+move' :: Position -> Mark -> Board -> Unfinished
 move' p m b =
   case b ! p of
-    Nothing -> b // [(p, Just m)]
-    _       -> b
+    Nothing -> Unfinished (b // [(p, Just m)]) $ opposite m
+    _       -> Unfinished b m
 
-game :: Board -> Game
-game b
+opposite :: Mark -> Mark
+opposite X = O
+opposite O = X
+
+game :: Unfinished -> Game
+game u@(Unfinished b _)
  | isWon  b  = Left . Finished b $ winner b
  | isFull b  = Left $ Finished b Nothing
- | otherwise = Right $ Unfinished b
+ | otherwise = Right u
 
 isWon :: Board -> Bool
 isWon = any isClaimed . straights
