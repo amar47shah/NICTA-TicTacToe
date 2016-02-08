@@ -16,8 +16,9 @@ start = Right $ Unfinished empty X
 move :: Position -> Unfinished -> Game
 move p (Unfinished b m) = game $ move' p m b
 
-playerAt :: Position -> Board -> Maybe Cell
-playerAt = flip (!?)
+playerAt :: Position -> Game -> Maybe Cell
+playerAt p (Left  (Finished   b _)) = b !? p
+playerAt p (Right (Unfinished b _)) = b !? p
 
 isDraw :: Finished -> Bool
 isDraw = isNothing . whoWon
