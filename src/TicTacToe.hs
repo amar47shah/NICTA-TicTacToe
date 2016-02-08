@@ -49,7 +49,7 @@ type Board = Array Position Cell
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 type Straight = [Cell]
-data Cell = Unclaimed | Claimed Mark
+data Cell = Unclaimed | Claimed Mark deriving Show
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
@@ -65,14 +65,13 @@ instance {-# OVERLAPPING #-} Show Board where
   show = unlines
        . intersperse bar
        . (intercalate " | " <$>)
-       . ((show <$>) <$>)
+       . ((draw <$>) <$>)
        . rows
     where bar :: String
           bar = concat $ "-" : replicate (pred dim) "-|--"
-
-instance Show Cell where
-  show (Claimed m) = show m
-  show _           = " "
+          draw :: Cell -> String
+          draw (Claimed m) = show m
+          draw _           = " "
 
 dim :: Coordinate
 dim = 3
