@@ -73,6 +73,9 @@ instance {-# OVERLAPPING #-} Show Board where
           draw (Claimed m) = show m
           draw _           = " "
 
+empty :: Board
+empty = listArray ((lower, lower), (upper, upper)) $ repeat Unclaimed
+
 lower, upper :: Coordinate
 (lower, upper) = (1, 3)
 
@@ -103,6 +106,9 @@ game u@(Unfinished b _)
  | isFull b  = Left $ Finished b Nothing
  | otherwise = Right u
 
+isFull :: Board -> Bool
+isFull = all isClaimed . elems
+
 isWon :: Board -> Bool
 isWon = any isAllClaimed . straights
 
@@ -120,6 +126,11 @@ isClaimed :: Cell -> Bool
 isClaimed Unclaimed = False
 isClaimed _         = True
 
+winner :: Board -> Winner
+winner b =
+  find isAllClaimed (straights b) >>=
+    (\s -> if isAllClaimedBy X s then Just X else Just O)
+
 straights :: Board -> [Straight]
 straights b = concatMap ($ b) [rows, columns, diagonals]
 
@@ -136,14 +147,3 @@ diagonals b =
   [ [ b ! (m, n) | m <- bounds, n <- bounds, m == n ]
   , [ b ! (m, n) | m <- bounds, n <- bounds, m + n == lower + upper ]
   ]
-
-isFull :: Board -> Bool
-isFull = all isClaimed . elems
-
-winner :: Board -> Winner
-winner b =
-  find isAllClaimed (straights b) >>=
-    (\s -> if isAllClaimedBy X s then Just X else Just O)
-
-empty :: Board
-empty = listArray ((lower, lower), (upper, upper)) $ repeat Unclaimed
