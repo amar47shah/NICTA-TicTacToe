@@ -116,7 +116,7 @@ isAllClaimed :: Straight -> Bool
 isAllClaimed s = isAllClaimedBy X s || isAllClaimedBy O s
 
 isAllClaimedBy :: Mark -> Straight -> Bool
-isAllClaimedBy m = all (isClaimedBy m)
+isAllClaimedBy = all . isClaimedBy
 
 isClaimedBy :: Mark -> Cell -> Bool
 isClaimedBy _ Unclaimed    = False
