@@ -2,9 +2,19 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module TicTacToe (start, move, playerAt, isDraw, whoWon, sample) where
+module TicTacToe ( start
+                 , move
+                 , playerAt
+                 , isFinished
+                 , isDraw
+                 , whoWon
+                 , sample
+                 , Game
+                 , Position
+                 ) where
 
 import Data.Array (Array, (!), (//), elems, listArray)
+import Data.Either (isLeft)
 import Data.List (find, intercalate, intersperse)
 import Data.Maybe (isNothing)
 
@@ -19,6 +29,9 @@ move p (Unfinished b m) = game $ move' p m b
 playerAt :: Position -> Game -> Maybe Cell
 playerAt p (Left  (Finished   b _)) = b !? p
 playerAt p (Right (Unfinished b _)) = b !? p
+
+isFinished :: Game -> Bool
+isFinished = isLeft
 
 isDraw :: Finished -> Bool
 isDraw = isNothing . whoWon

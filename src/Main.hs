@@ -1,15 +1,25 @@
 module Main where
 
-import TicTacToe
+import TicTacToe (Game, Position, move, isFinished, start)
 
 import Data.Char (digitToInt)
 
 main :: IO ()
-main = do
-  let game = start
+main = untilM isFinished takeTurn start >>= putStrLn . show >> return ()
+
+takeTurn :: Game -> IO Game
+takeTurn game = do
   putStrLn $ show game
   putStr "Your move."
-  position <- (,) <$> (putStr "\nROW: " >> digitToInt <$> getChar) <*> (putStr "\nCOLUMN: " >> digitToInt <$> getChar)
+  position <- getPosition
   putStrLn ""
-  let game' = game >>= move position
-  putStrLn $ show game'
+  return $ game >>= move position
+
+getPosition :: IO Position
+getPosition = (,) <$> inputDigit "ROW" <*> inputDigit "COLUMN"
+  where inputDigit s = putStr ('\n' : s ++ ": ") >> digitToInt <$> getChar
+
+untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
+untilM p k x
+ | p x       = return x
+ | otherwise = k x >>= untilM p k
