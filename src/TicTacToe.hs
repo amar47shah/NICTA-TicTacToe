@@ -68,14 +68,14 @@ instance {-# OVERLAPPING #-} Show Game where
   show = either show show
 
 instance Show Finished where
-  show (Finished b Nothing)  = "DRAW\n" ++ show b
-  show (Finished b (Just m)) = "WINNER: " ++ show m ++ '\n' : show b
+  show (Finished b Nothing)  = show b ++ "\nDRAW"
+  show (Finished b (Just m)) = show b ++ "\nWINNER: " ++ show m
 
 instance Show Unfinished where
-  show (Unfinished b m) = show m ++ " to play\n" ++ show b
+  show (Unfinished b m) = show b ++ "\n" ++ show m ++ " to play"
 
 instance {-# OVERLAPPING #-} Show Board where
-  show = unlines
+  show = intercalate "\n"
        . intersperse bar
        . (intercalate " | " <$>)
        . ((draw <$>) <$>)

@@ -5,15 +5,16 @@ import TicTacToe (Game, Position, move, isFinished, start)
 import Data.Char (digitToInt)
 
 main :: IO ()
-main = untilM isFinished takeTurn start >>= putStrLn . show >> return ()
+main =
+  putStrLn "" >>
+    untilM isFinished takeTurn start >>=
+      putStrLn . show >>
+        return ()
 
 takeTurn :: Game -> IO Game
-takeTurn game = do
-  putStrLn $ show game
-  putStr "Your move."
-  position <- getPosition
-  putStrLn ""
-  return $ game >>= move position
+takeTurn game =
+  (putStr . show) game >> getPosition >>=
+      (putStr "\n\n" >>) . return . (game >>=) . move
 
 getPosition :: IO Position
 getPosition = (,) <$> inputDigit "ROW" <*> inputDigit "COLUMN"
