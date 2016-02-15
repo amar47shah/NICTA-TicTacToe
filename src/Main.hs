@@ -1,6 +1,6 @@
 module Main where
 
-import TicTacToe (Game, Position, move, isFinished, start)
+import TicTacToe (Game, Position, Coordinate, move, isFinished, start)
 
 import Data.Char (digitToInt)
 
@@ -17,8 +17,13 @@ takeTurn game =
       (putStr "\n\n" >>) . return . (game >>=) . move
 
 getPosition :: IO Position
-getPosition = (,) <$> inputDigit "ROW" <*> inputDigit "COLUMN"
-  where inputDigit s = putStr ('\n' : s ++ ": ") >> digitToInt <$> getChar
+getPosition = (,) <$> inputCoord "ROW" <*> inputCoord "COLUMN"
+    where
+  inputCoord :: String -> IO Coordinate
+  inputCoord s = putStr ('\n' : s ++ ": ") >> toCoord <$> getChar
+  toCoord :: Char -> Coordinate
+  toCoord c | c `elem` ['0'..'9'] = digitToInt c
+            | otherwise           = 0
 
 untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
 untilM p k x
