@@ -97,13 +97,13 @@ lower, upper :: Coordinate
 bounds :: [Coordinate]
 bounds = [lower..upper]
 
-inBounds :: Coordinate -> Bool
-inBounds c = c `elem` bounds
+inBounds :: Position -> Bool
+inBounds (m, n) = all (`elem` bounds) [m, n]
 
 (!?) :: Board -> Position -> Maybe Cell
-b !? (m, n)
- | all inBounds [m, n] = Just $ b ! (m, n)
- | otherwise           = Nothing
+b !? p
+ | inBounds p = Just $ b ! p
+ | otherwise  = Nothing
 
 move' :: Position -> Mark -> Board -> Unfinished
 move' p m b =
