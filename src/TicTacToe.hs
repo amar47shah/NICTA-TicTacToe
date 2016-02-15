@@ -11,6 +11,7 @@ module TicTacToe ( start
                  , sample
                  , Game
                  , Position
+                 , Coordinate
                  ) where
 
 import Data.Array (Array, (!), (//), elems, listArray)
@@ -19,6 +20,10 @@ import Data.List (find, intercalate, intersperse)
 import Data.Maybe (isNothing)
 
 -- Exported definitions
+
+type Game = Either Finished Unfinished
+type Position = (Coordinate, Coordinate)
+type Coordinate = Int
 
 start :: Game
 start = Right $ Unfinished empty X
@@ -53,13 +58,10 @@ sample = start >>=
 
 -- Private definitions
 
-type Game = Either Finished Unfinished
 data Finished = Finished Board Winner
 data Unfinished = Unfinished Board Mark
 type Winner = Maybe Mark
 type Board = Array Position Cell
-type Position = (Coordinate, Coordinate)
-type Coordinate = Int
 type Straight = [Cell]
 data Cell = Unclaimed | Claimed Mark deriving Show
 data Mark = X | O deriving (Eq, Show)
