@@ -1,6 +1,17 @@
 TicTacToe
 =========
 
+Setup
+-----
+
+1. Install [stack](http://docs.haskellstack.org/en/stable/README.html).
+2. `stack build` to produce binary.
+3. `stack exec NICTA-TicTacToe` to run program.
+
+
+Exercise Description
+-----
+
 The goal is to write an API for the tic-tac-toe game. An API user, should be able to play a game of tic-tac-toe using this API, but importantly, it should be impossible for the API user to break the rules of the game. Specifically, if an attempt is made to break a rule, the API should reject the program. This is often done by way of a *compile-time type error*.
 
 It is strongly advised that functional programming techniques are used to achieve the goal. This is because ensuring that the API adheres to the rules of tic-tac-toe, while rejecting a program otherwise, is difficult otherwise. No specific programming language is prescribed.
