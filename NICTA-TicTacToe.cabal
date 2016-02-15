@@ -17,7 +17,7 @@ cabal-version:       >=1.10
 
 executable NICTA-TicTacToe
   main-is:             Main.hs
-  -- other-modules:       
+  other-modules:       TicTacToe
   -- other-extensions:    
   build-depends:       base >=4.8 && <4.9, array
   hs-source-dirs:      src
