@@ -3,6 +3,7 @@ module Main where
 import TicTacToe (Game, Position, Coordinate, move, isFinished, start)
 
 import Data.Char (digitToInt)
+import System.IO (hFlush, stdout)
 
 main :: IO ()
 main =
@@ -13,17 +14,21 @@ main =
 
 takeTurn :: Game -> IO Game
 takeTurn game =
-  (putStr . show) game >> getPosition >>=
-      (putStr "\n\n" >>) . return . (game >>=) . move
+  (putStrLn . show) game >> getPosition >>=
+      (putStrLn "\n" >>) . return . (game >>=) . move
 
 getPosition :: IO Position
-getPosition = (,) <$> inputCoord "ROW" <*> inputCoord "COLUMN"
+getPosition =
+  (,) <$> (prompt "ROW" *> getCoord) <*> (prompt "COLUMN" *> getCoord)
     where
-  inputCoord :: String -> IO Coordinate
-  inputCoord s = putStr ('\n' : s ++ ": ") >> toCoord <$> getChar
-  toCoord :: Char -> Coordinate
-  toCoord c | c `elem` ['0'..'9'] = digitToInt c
-            | otherwise           = 0
+  getCoord :: IO Coordinate
+  getCoord = toCoord <$> getLine
+  toCoord :: String -> Coordinate
+  toCoord (c:"") | c `elem` ['0'..'9'] = digitToInt c
+  toCoord _                            = -1
+
+prompt :: String -> IO ()
+prompt = (>> hFlush stdout) . putStr . (++ ": ")
 
 untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
 untilM p k x
