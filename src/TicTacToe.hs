@@ -25,6 +25,9 @@ type Game = Either Finished Unfinished
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 
+instance {-# OVERLAPPING #-} Show Game where
+  show = either show show
+
 start :: Game
 start = Right $ Unfinished empty X
 
@@ -65,9 +68,6 @@ type Board = Array Position Cell
 type Straight = [Cell]
 data Cell = Unclaimed | Claimed Mark deriving Show
 data Mark = X | O deriving (Eq, Show)
-
-instance {-# OVERLAPPING #-} Show Game where
-  show = either show show
 
 instance Show Finished where
   show (Finished b Nothing)  = show b ++ "\nDRAW"
