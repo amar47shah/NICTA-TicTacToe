@@ -1,5 +1,7 @@
 module Main where
 
+import TicTacToe
+
 import Test.Tasty
 import Test.Tasty.QuickCheck as QC
 
@@ -14,3 +16,6 @@ qcProps = testGroup "QuickCheck"
 
 myLength :: [a] -> Int
 myLength = foldr (const succ) 0
+
+game :: Game
+game = start
