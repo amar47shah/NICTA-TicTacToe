@@ -3,19 +3,16 @@ module Main where
 import TicTacToe
 
 import Test.Tasty
-import Test.Tasty.QuickCheck as QC
+import Test.Tasty.HUnit as H
 
 main :: IO ()
-main = defaultMain qcProps
+main = defaultMain tests
 
-qcProps :: TestTree
-qcProps = testGroup "QuickCheck"
-  [ QC.testProperty "myLength xs == length xs" $
-      \xs -> myLength (xs :: [Int]) == length xs
+tests :: TestTree
+tests = testGroup "Tests" [unitTests]
+
+unitTests :: TestTree
+unitTests = testGroup "Unit Tests"
+  [ H.testCase "isFinished start == False" $ isFinished start  H.@?= False
+  , H.testCase "isFinished sample == True" $ isFinished sample H.@?= True
   ]
-
-myLength :: [a] -> Int
-myLength = foldr (const succ) 0
-
-game :: Game
-game = start
