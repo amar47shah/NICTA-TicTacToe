@@ -11,6 +11,8 @@ module TicTacToe ( start
                  , Game
                  , Position
                  , Coordinate
+                 , lower
+                 , upper
                  ) where
 
 import Data.Array (Array, (!), (//), elems, listArray)
