@@ -27,6 +27,8 @@ import Data.Maybe (isNothing)
 type Game = Either Finished Unfinished
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
+data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
+data Mark = X | O deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
@@ -62,6 +64,9 @@ sample = start >>=
    move (3, 3) >>=
    move (1, 3)
 
+lower, upper :: Coordinate
+(lower, upper) = (1, 3)
+
 -- Private definitions
 
 data Finished = Finished Board Winner
@@ -69,8 +74,6 @@ data Unfinished = Unfinished Board Mark
 type Winner = Maybe Mark
 type Board = Array Position Cell
 type Straight = [Cell]
-data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
-data Mark = X | O deriving (Eq, Show)
 
 instance Show Finished where
   show (Finished b Nothing)  = show b ++ "\nDRAW"
@@ -93,9 +96,6 @@ instance {-# OVERLAPPING #-} Show Board where
 
 empty :: Board
 empty = listArray ((lower, lower), (upper, upper)) $ repeat Unclaimed
-
-lower, upper :: Coordinate
-(lower, upper) = (1, 3)
 
 bounds :: [Coordinate]
 bounds = [lower..upper]
