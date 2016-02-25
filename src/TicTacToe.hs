@@ -11,6 +11,8 @@ module TicTacToe ( start
                  , Game
                  , Position
                  , Coordinate
+                 , Cell(..)
+                 , Mark(..)
                  , lower
                  , upper
                  ) where
@@ -67,7 +69,7 @@ data Unfinished = Unfinished Board Mark
 type Winner = Maybe Mark
 type Board = Array Position Cell
 type Straight = [Cell]
-data Cell = Unclaimed | Claimed Mark deriving Show
+data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
 data Mark = X | O deriving (Eq, Show)
 
 instance Show Finished where
