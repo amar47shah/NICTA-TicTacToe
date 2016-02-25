@@ -1,9 +1,17 @@
 module Main where
 
-import TicTacToe (Game, Position, Coordinate, move, isFinished, start)
+import TicTacToe ( Game
+                 , Position
+                 , Coordinate
+                 , move
+                 , isFinished
+                 , start
+                 , lower
+                 , upper)
 
-import Data.Char (digitToInt)
+import Data.Maybe (fromMaybe)
 import System.IO (hFlush, stdout)
+import Text.Read (readMaybe)
 
 main :: IO ()
 main =
@@ -15,17 +23,17 @@ main =
 takeTurn :: Game -> IO Game
 takeTurn game =
   (putStrLn . show) game >> getPosition >>=
-      (putStrLn "\n" >>) . return . (game >>=) . move
+    (putStrLn "\n" >>) . return . (game >>=) . move
 
 getPosition :: IO Position
 getPosition =
-  (,) <$> (prompt "ROW" *> getCoord) <*> (prompt "COLUMN" *> getCoord)
+  (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
     where
-  getCoord :: IO Coordinate
-  getCoord = toCoord <$> getLine
-  toCoord :: String -> Coordinate
-  toCoord (c:"") | c `elem` ['0'..'9'] = digitToInt c
-  toCoord _                            = -1
+  getCoord :: String -> IO Coordinate
+  getCoord p =
+    untilM (`elem` [lower..upper])
+           (const $ prompt p >> (fromMaybe (-1) . readMaybe <$> getLine))
+           (-1)
 
 prompt :: String -> IO ()
 prompt = (>> hFlush stdout) . putStr . (++ ": ")
