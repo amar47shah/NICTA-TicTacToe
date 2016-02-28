@@ -1,13 +1,13 @@
 module Main where
 
-import TicTacToe ( Game
-                 , Position
-                 , Coordinate
-                 , move
-                 , isFinished
-                 , start
-                 , lower
-                 , upper)
+import Game ( Game
+            , Position
+            , Coordinate
+            , move
+            , isFinished
+            , start
+            , lower
+            , upper)
 
 import Data.Maybe (fromMaybe)
 import System.IO (hFlush, stdout)

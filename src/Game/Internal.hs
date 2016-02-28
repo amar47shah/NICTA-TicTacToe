@@ -1,30 +1,12 @@
 {-# LANGUAGE FlexibleInstances #-}
 {-# LANGUAGE TypeSynonymInstances #-}
 
-module TicTacToe ( start
-                 , move
-                 , playerAt
-                 , isFinished
-                 , isDraw
-                 , whoWon
-                 , sample
-                 , Game
-                 , Finished(..)
-                 , Unfinished(..)
-                 , Position
-                 , Coordinate
-                 , Cell(..)
-                 , Mark(..)
-                 , lower
-                 , upper
-                 ) where
+module Game.Internal where
 
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.Either (isLeft)
 import Data.List (find, intercalate, intersperse)
 import Data.Maybe (isNothing)
-
--- Exported definitions
 
 type Game = Either Finished Unfinished
 data Finished = Finished Board Winner
@@ -70,8 +52,6 @@ sample = start >>=
 
 lower, upper :: Coordinate
 (lower, upper) = (1, 3)
-
--- Private definitions
 
 type Winner = Maybe Mark
 type Board = Array Position Cell

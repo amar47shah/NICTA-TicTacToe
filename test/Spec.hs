@@ -1,6 +1,6 @@
 module Main where
 
-import TicTacToe
+import Game.Internal
 
 import Test.Tasty
 import qualified Test.Tasty.HUnit as HU
