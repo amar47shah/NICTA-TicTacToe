@@ -4,8 +4,7 @@ module Game ( Game
             , start
             , move
             , isFinished
-            , lower
-            , upper
+            , bounds
             ) where
 
 import Game.Internal

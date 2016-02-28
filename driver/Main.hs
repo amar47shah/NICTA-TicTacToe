@@ -1,13 +1,6 @@
 module Main where
 
-import Game ( Game
-            , Position
-            , Coordinate
-            , move
-            , isFinished
-            , start
-            , lower
-            , upper)
+import Game (Game, Position, Coordinate, move, isFinished, start, bounds)
 
 import Data.Maybe (fromMaybe)
 import System.IO (hFlush, stdout)
@@ -31,7 +24,7 @@ getPosition =
     where
   getCoord :: String -> IO Coordinate
   getCoord p =
-    untilM (`elem` [lower..upper])
+    untilM (`elem` bounds)
            (const $ prompt p >> (fromMaybe (-1) . readMaybe <$> getLine))
            (-1)
 
