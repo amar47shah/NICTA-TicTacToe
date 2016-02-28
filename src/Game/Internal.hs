@@ -9,15 +9,38 @@ import Data.List (find, intercalate, intersperse)
 import Data.Maybe (isNothing)
 
 type Game = Either Finished Unfinished
-data Finished = Finished Board Winner
-data Unfinished = Unfinished Board Mark
+type Board = Array Position Cell
+type Winner = Maybe Mark
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
-data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
+type Straight = [Cell]
+
+data Finished = Finished Board Winner
+data Unfinished = Unfinished Board Mark
 data Mark = X | O deriving (Eq, Show)
+data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
+
+instance Show Finished where
+  show (Finished b Nothing)  = show b ++ "\nDRAW"
+  show (Finished b (Just m)) = show b ++ "\nWINNER: " ++ show m
+
+instance Show Unfinished where
+  show (Unfinished b m) = show b ++ "\n" ++ show m ++ " to play"
+
+instance {-# OVERLAPPING #-} Show Board where
+  show = intercalate "\n"
+       . intersperse bar
+       . (intercalate " | " <$>)
+       . ((draw <$>) <$>)
+       . rows
+    where bar :: String
+          bar = concat $ "-" : replicate (upper - lower) "-|--"
+          draw :: Cell -> String
+          draw (Claimed m) = show m
+          draw _           = " "
 
 start :: Game
 start = Right $ Unfinished empty X
@@ -52,29 +75,6 @@ sample = start >>=
 
 lower, upper :: Coordinate
 (lower, upper) = (1, 3)
-
-type Winner = Maybe Mark
-type Board = Array Position Cell
-type Straight = [Cell]
-
-instance Show Finished where
-  show (Finished b Nothing)  = show b ++ "\nDRAW"
-  show (Finished b (Just m)) = show b ++ "\nWINNER: " ++ show m
-
-instance Show Unfinished where
-  show (Unfinished b m) = show b ++ "\n" ++ show m ++ " to play"
-
-instance {-# OVERLAPPING #-} Show Board where
-  show = intercalate "\n"
-       . intersperse bar
-       . (intercalate " | " <$>)
-       . ((draw <$>) <$>)
-       . rows
-    where bar :: String
-          bar = concat $ "-" : replicate (upper - lower) "-|--"
-          draw :: Cell -> String
-          draw (Claimed m) = show m
-          draw _           = " "
 
 empty :: Board
 empty = listArray ((lower, lower), (upper, upper)) $ repeat Unclaimed
