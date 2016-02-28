@@ -23,9 +23,10 @@ props = testGroup "Properties" [qcProps]
 
 qcProps :: TestTree
 qcProps = testGroup "QuickCheck"
-  [ QC.testProperty "game starts empty" propGameStartsEmpty
+  [ QC.testProperty "game starts empty"              propGameStartsEmpty
   , QC.testProperty "one move doesn't finish a game" propOneMoveGameUnfinished
   , QC.testProperty "first move claims a cell for X" propFirstMoveForX
+  , QC.testProperty "second turn for O"              propSecondTurnForO
   ]
 
 coord :: QC.Gen Coordinate
@@ -45,3 +46,7 @@ propOneMoveGameUnfinished =
 propFirstMoveForX :: QC.Property
 propFirstMoveForX =
   QC.forAll pos $ \p -> playerAt p (start >>= move p) == Just (Claimed X)
+
+propSecondTurnForO :: QC.Property
+propSecondTurnForO =
+  QC.forAll pos $ \p -> (\(Right (Unfinished _ m)) -> m == O) (start >>= move p)

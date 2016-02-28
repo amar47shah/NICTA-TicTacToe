@@ -9,6 +9,8 @@ module TicTacToe ( start
                  , whoWon
                  , sample
                  , Game
+                 , Finished(..)
+                 , Unfinished(..)
                  , Position
                  , Coordinate
                  , Cell(..)
@@ -25,6 +27,8 @@ import Data.Maybe (isNothing)
 -- Exported definitions
 
 type Game = Either Finished Unfinished
+data Finished = Finished Board Winner
+data Unfinished = Unfinished Board Mark
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
@@ -69,8 +73,6 @@ lower, upper :: Coordinate
 
 -- Private definitions
 
-data Finished = Finished Board Winner
-data Unfinished = Unfinished Board Mark
 type Winner = Maybe Mark
 type Board = Array Position Cell
 type Straight = [Cell]
