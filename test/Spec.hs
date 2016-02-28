@@ -16,6 +16,7 @@ unitTests :: TestTree
 unitTests = testGroup "Unit Tests"
   [ HU.testCase "isFinished start == False" $ isFinished start  HU.@?= False
   , HU.testCase "isFinished sample == True" $ isFinished sample HU.@?= True
+  , HU.testCase "-1 `elem` bounds == False" $ -1 `elem` bounds HU.@?= False
   ]
 
 props :: TestTree
