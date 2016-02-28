@@ -21,12 +21,16 @@ takeTurn game =
 getPosition :: IO Position
 getPosition =
   (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
-    where
-  getCoord :: String -> IO Coordinate
-  getCoord p =
-    untilM (`elem` bounds)
-           (const $ prompt p >> (fromMaybe (-1) . readMaybe <$> getLine))
-           (-1)
+
+getCoord :: String -> IO Coordinate
+getCoord p =
+  untilM (`elem` bounds) (\_ -> prompt p >> fmap readCoord getLine) badCoord
+
+readCoord :: String -> Coordinate
+readCoord = fromMaybe badCoord . readMaybe
+
+badCoord :: Coordinate
+badCoord = -1
 
 prompt :: String -> IO ()
 prompt = (>> hFlush stdout) . putStr . (++ ": ")
