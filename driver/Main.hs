@@ -15,12 +15,12 @@ main =
 
 takeTurn :: Game -> IO Game
 takeTurn game =
-  (putStrLn . show) game >> getPosition >>=
-    (putStrLn "\n" >>) . return . (game >>=) . move
+  (putStrLn . show) game >>
+    getPosition >>=
+      (putStrLn "\n" >>) . return . (game >>=) . move
 
 getPosition :: IO Position
-getPosition =
-  (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
+getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
 
 getCoord :: String -> IO Coordinate
 getCoord p =
