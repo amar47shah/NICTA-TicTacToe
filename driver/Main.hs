@@ -8,16 +8,16 @@ import Text.Read (readMaybe)
 
 main :: IO ()
 main =
-  putStrLn "\n" >>
+  putSpace >>
     untilM isFinished takeTurn start >>=
-      putStrLn . show >>
+      putShow >>
         return ()
 
 takeTurn :: Game -> IO Game
 takeTurn game =
-  (putStrLn . show) game >>
+  putShow game >>
     getPosition >>=
-      (putStrLn "\n" >>) . return . (game >>=) . move
+      (putSpace >>) . return . (game >>=) . move
 
 getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
@@ -34,6 +34,12 @@ badCoord = -1
 
 prompt :: String -> IO ()
 prompt = (>> hFlush stdout) . putStr . (++ ": ")
+
+putSpace :: IO ()
+putSpace = putStrLn "\n"
+
+putShow :: Show a => a -> IO ()
+putShow = putStrLn . show
 
 untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
 untilM p k x
