@@ -16,8 +16,9 @@ main =
 takeTurn :: Game -> IO Game
 takeTurn game =
   putShow game >>
-    getPosition >>=
-      (putSpace >>) . return . (game >>=) . move
+    getPosition >>= \pos ->
+      putSpace >>
+        return (game >>= move pos)
 
 getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
@@ -33,7 +34,7 @@ badCoord :: Coordinate
 badCoord = -1
 
 prompt :: String -> IO ()
-prompt = (>> hFlush stdout) . putStr . (++ ": ")
+prompt p = putStr (p ++ ": ") >> hFlush stdout
 
 putSpace :: IO ()
 putSpace = putStrLn "\n"
