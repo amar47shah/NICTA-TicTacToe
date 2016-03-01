@@ -8,7 +8,7 @@ import Text.Read (readMaybe)
 
 main :: IO ()
 main =
-  putStrLn "" >>
+  putStrLn "\n" >>
     untilM isFinished takeTurn start >>=
       putStrLn . show >>
         return ()
