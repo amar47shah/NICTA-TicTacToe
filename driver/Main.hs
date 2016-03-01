@@ -24,8 +24,10 @@ getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
 
 getCoord :: String -> IO Coordinate
-getCoord p =
-  untilM (`elem` bounds) (\_ -> prompt p >> fmap readCoord getLine) badCoord
+getCoord p = untilM (`elem` bounds) (const $ promptCoord p) badCoord
+
+promptCoord :: String -> IO Coordinate
+promptCoord p = prompt p >> fmap readCoord getLine
 
 readCoord :: String -> Coordinate
 readCoord = fromMaybe badCoord . readMaybe
