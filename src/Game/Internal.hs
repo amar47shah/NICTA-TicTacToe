@@ -40,7 +40,7 @@ instance {-# OVERLAPPING #-} Show Board where
           bar = concat $ "-" : replicate (upper - lower) "-|--"
           draw :: Cell -> String
           draw (Claimed m) = show m
-          draw _           = " "
+          draw _           = "·"
 
 start :: Game
 start = Right $ Unfinished empty X
