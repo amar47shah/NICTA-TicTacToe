@@ -17,8 +17,8 @@ type Straight = [Cell]
 
 data Finished = Finished Board Winner
 data Unfinished = Unfinished Board Mark
-data Mark = X | O deriving (Eq, Show)
 data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
+data Mark = X | O deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
