@@ -5,8 +5,9 @@ Setup
 -----
 
 1. Install [stack](http://docs.haskellstack.org/en/stable/README.html).
-2. `stack build` to produce binary.
-3. `stack exec NICTA-TicTacToe` to run program.
+2. `stack build` to compile.
+3. `stack test` to run tests.
+4. `stack exec tictactoe` to run program.
 
 
 Exercise Description
