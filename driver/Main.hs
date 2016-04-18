@@ -10,12 +10,12 @@ main :: IO ()
 main =
   putSpace >>
     untilM isFinished takeTurn start >>=
-      putShow >>
+      print >>
         return ()
 
 takeTurn :: Game -> IO Game
 takeTurn game =
-  putShow game >>
+  print game >>
     getPosition >>= \pos ->
       putSpace >>
         return (game >>= move pos)
@@ -40,9 +40,6 @@ prompt p = putStr (p ++ ": ") >> hFlush stdout
 
 putSpace :: IO ()
 putSpace = putStrLn "\n"
-
-putShow :: Show a => a -> IO ()
-putShow = putStrLn . show
 
 untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
 untilM p k x
