@@ -10,15 +10,15 @@ import Data.Maybe (isNothing)
 
 type Game = Either Finished Unfinished
 type Board = Array Position Cell
-type Winner = Maybe Mark
+type Winner = Maybe Player
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 type Straight = [Cell]
 
 data Finished = Finished Board Winner
-data Unfinished = Unfinished Board Mark
-data Cell = Unclaimed | Claimed Mark deriving (Eq, Show)
-data Mark = X | O deriving (Eq, Show)
+data Unfinished = Unfinished Board Player
+data Cell = Unclaimed | Claimed Player deriving (Eq, Show)
+data Player = X | O deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
@@ -90,13 +90,13 @@ b !? p
  | inBounds p = Just $ b ! p
  | otherwise  = Nothing
 
-move' :: Position -> Mark -> Board -> Unfinished
+move' :: Position -> Player -> Board -> Unfinished
 move' p m b =
   case b !? p of
     Just Unclaimed -> Unfinished (b // [(p, Claimed m)]) $ opposite m
     _              -> Unfinished b m
 
-opposite :: Mark -> Mark
+opposite :: Player -> Player
 opposite X = O
 opposite O = X
 
@@ -115,10 +115,10 @@ isWon = any isAllClaimed . straights
 isAllClaimed :: Straight -> Bool
 isAllClaimed s = isAllClaimedBy X s || isAllClaimedBy O s
 
-isAllClaimedBy :: Mark -> Straight -> Bool
+isAllClaimedBy :: Player -> Straight -> Bool
 isAllClaimedBy = all . isClaimedBy
 
-isClaimedBy :: Mark -> Cell -> Bool
+isClaimedBy :: Player -> Cell -> Bool
 isClaimedBy _ Unclaimed    = False
 isClaimedBy m (Claimed m') = m == m'
 
