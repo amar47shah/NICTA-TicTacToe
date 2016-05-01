@@ -11,14 +11,14 @@ main =
   printLine >>
     untilM isFinished takeTurn start >>=
       print >>
-        return ()
+        pure ()
 
 takeTurn :: Game -> IO Game
 takeTurn game =
   print game >>
     getPosition >>= \pos ->
       printLine >>
-        return (game >>= move pos)
+        pure (game >>= move pos)
 
 getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
@@ -43,5 +43,5 @@ printLine = putStrLn "\n"
 
 untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
 untilM p k x
- | p x       = return x
+ | p x       = pure x
  | otherwise = k x >>= untilM p k
