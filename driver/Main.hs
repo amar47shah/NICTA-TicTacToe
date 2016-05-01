@@ -8,7 +8,7 @@ import Text.Read (readMaybe)
 
 main :: IO ()
 main =
-  putSpace >>
+  printLine >>
     untilM isFinished takeTurn start >>=
       print >>
         return ()
@@ -17,7 +17,7 @@ takeTurn :: Game -> IO Game
 takeTurn game =
   print game >>
     getPosition >>= \pos ->
-      putSpace >>
+      printLine >>
         return (game >>= move pos)
 
 getPosition :: IO Position
@@ -38,8 +38,8 @@ badCoord = -1
 prompt :: String -> IO ()
 prompt p = putStr (p ++ ": ") >> hFlush stdout
 
-putSpace :: IO ()
-putSpace = putStrLn "\n"
+printLine :: IO ()
+printLine = putStrLn "\n"
 
 untilM :: Monad m => (a -> Bool) -> (a -> m a) -> a -> m a
 untilM p k x
