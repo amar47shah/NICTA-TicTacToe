@@ -30,12 +30,6 @@ qcProps = testGroup "QuickCheck"
   , QC.testProperty "second turn for O"              propSecondTurnForO
   ]
 
-coord :: QC.Gen Coordinate
-coord = QC.choose (lower, upper)
-
-pos :: QC.Gen Position
-pos = (,) <$> coord <*> coord
-
 propGameStartsEmpty :: QC.Property
 propGameStartsEmpty =
   QC.forAll pos $ \p -> playerAt p start == Just Unclaimed
@@ -51,3 +45,33 @@ propFirstMoveForX =
 propSecondTurnForO :: QC.Property
 propSecondTurnForO =
   QC.forAll pos $ \p -> (\(Right (Unfinished _ m)) -> m == O) (start >>= move p)
+
+coord :: QC.Gen Coordinate
+coord = QC.choose (lower, upper)
+
+pos :: QC.Gen Position
+pos = (,) <$> coord <*> coord
+
+player :: QC.Gen Player
+player = QC.elements [X, O]
+
+cell :: QC.Gen Cell
+cell = QC.oneof [pure Unclaimed, Claimed <$> player]
+
+straight :: QC.Gen Straight
+straight = QC.listOf cell
+
+board :: QC.Gen Board
+board = boardFromCells <$> QC.infiniteListOf cell
+
+unfinished :: QC.Gen Unfinished
+unfinished = Unfinished <$> board <*> player
+
+winner :: QC.Gen Winner
+winner = QC.oneof [pure Nothing, Just <$> player]
+
+finished :: QC.Gen Finished
+finished = Finished <$> board <*> winner
+
+game :: QC.Gen Game
+game = QC.oneof [Left <$> finished, Right <$> unfinished]

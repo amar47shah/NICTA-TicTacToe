@@ -46,7 +46,7 @@ start :: Game
 start = Right $ Unfinished empty X
 
 move :: Position -> Unfinished -> Game
-move p (Unfinished b m) = game $ move' p m b
+move p (Unfinished b m) = next $ move' p m b
 
 playerAt :: Position -> Game -> Maybe Cell
 playerAt p (Left  (Finished   b _)) = b !? p
@@ -76,8 +76,11 @@ sample = start >>=
 lower, upper :: Coordinate
 (lower, upper) = (1, 3)
 
+boardFromCells :: [Cell] -> Board
+boardFromCells = listArray ((lower, lower), (upper, upper))
+
 empty :: Board
-empty = listArray ((lower, lower), (upper, upper)) $ repeat Unclaimed
+empty = boardFromCells $ repeat Unclaimed
 
 bounds :: [Coordinate]
 bounds = [lower..upper]
@@ -100,9 +103,9 @@ opposite :: Player -> Player
 opposite X = O
 opposite O = X
 
-game :: Unfinished -> Game
-game u@(Unfinished b _)
- | isWon  b  = Left . Finished b $ winner b
+next :: Unfinished -> Game
+next u@(Unfinished b _)
+ | isWon  b  = Left . Finished b $ whoWon' b
  | isFull b  = Left $ Finished b Nothing
  | otherwise = Right u
 
@@ -126,8 +129,8 @@ isClaimed :: Cell -> Bool
 isClaimed Unclaimed = False
 isClaimed _         = True
 
-winner :: Board -> Winner
-winner b =
+whoWon' :: Board -> Winner
+whoWon' b =
   find isAllClaimed (straights b) >>=
     (\s -> if isAllClaimedBy X s then Just X else Just O)
 
