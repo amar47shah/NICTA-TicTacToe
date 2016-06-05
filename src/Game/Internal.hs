@@ -16,7 +16,7 @@ type Straight = [Cell]
 
 data Finished = Finished Board Outcome
 data Unfinished = Unfinished Board Player
-data Outcome = Draw | Winner Player
+data Outcome = Draw | Won Player
 data Cell = Unclaimed | Claimed Player deriving (Eq, Show)
 data Player = X | O deriving (Eq, Show)
 
@@ -42,8 +42,8 @@ instance {-# OVERLAPPING #-} Show Board where
           display _           = "·"
 
 instance Show Outcome where
-  show Draw       = "DRAW"
-  show (Winner m) = "WINNER: " ++ show m
+  show Draw    = "DRAW"
+  show (Won m) = "WINNER: " ++ show m
 
 start :: Game
 start = Right $ Unfinished empty X
@@ -137,7 +137,7 @@ isClaimed _         = True
 winner :: Board -> Outcome
 winner = maybe Draw winner' . find isAllClaimed . straights
     where
-  winner' s = Winner $
+  winner' s = Won $
     case listToMaybe s of
       Just (Claimed p) -> p
       Just Unclaimed   -> X

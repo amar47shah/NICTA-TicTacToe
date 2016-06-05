@@ -68,7 +68,7 @@ unfinished :: QC.Gen Unfinished
 unfinished = Unfinished <$> board <*> player
 
 outcome :: QC.Gen Outcome
-outcome = QC.oneof [pure Draw, Winner <$> player]
+outcome = QC.oneof [pure Draw, Won <$> player]
 
 finished :: QC.Gen Finished
 finished = Finished <$> board <*> outcome
