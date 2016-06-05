@@ -10,9 +10,9 @@ import Text.Read (readMaybe)
 
 main :: IO ()
 main =
-  printLine >>
+  putDoubleLine >>
     getTurns >>= \turns ->
-      printLine >>
+      putDoubleLine >>
         untilM2 isFinished turns start >>=
           print >>
             pure ()
@@ -39,13 +39,13 @@ tryTurn :: Turn
 tryTurn game =
   print game >>
     getPosition >>= \pos ->
-      printLine >>
+      putDoubleLine >>
         pure (game >>= move pos)
 
 randomTurn :: Turn
 randomTurn game =
   print game >>
-    printLine >>
+    putDoubleLine >>
       either (pure . Left) randomMove game
 
 getPosition :: IO Position
@@ -70,8 +70,8 @@ prompt p = putStr (padRight 8 (p ++ ": ")) >> hFlush stdout
 padRight :: Int -> String -> String
 padRight n s = s ++ replicate (n - length s) ' '
 
-printLine :: IO ()
-printLine = putStrLn "\n"
+putDoubleLine :: IO ()
+putDoubleLine = putStrLn "\n"
 
 untilM2 :: Monad m => (a -> Bool) -> (a -> m a, a -> m a) -> a -> m a
 untilM2 p (k, l) x
