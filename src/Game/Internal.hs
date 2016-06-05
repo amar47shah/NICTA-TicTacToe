@@ -8,17 +8,17 @@ import Data.Either (isLeft)
 import Data.List (find, intercalate, intersperse)
 import Data.Maybe (listToMaybe)
 
-type Game = Either Finished Unfinished
-type Board = Array Position Cell
-type Position = (Coordinate, Coordinate)
+type Game       = Either Finished Unfinished
+type Board      = Array Position Cell
+type Position   = (Coordinate, Coordinate)
 type Coordinate = Int
-type Straight = [Cell]
+type Straight   = [Cell]
 
-data Finished = Finished Board Outcome
+data Finished   = Finished Board Outcome
 data Unfinished = Unfinished Board Player
-data Outcome = Draw | Won Player
-data Cell = Unclaimed | Claimed Player deriving (Eq, Show)
-data Player = X | O deriving (Eq, Show)
+data Outcome    = Draw | Won Player
+data Cell       = Unclaimed | Claimed Player deriving (Eq, Show)
+data Player     = X | O                      deriving (Eq, Show)
 
 instance {-# OVERLAPPING #-} Show Game where
   show = either show show
