@@ -58,11 +58,6 @@ playerAt p (Right (Unfinished b _)) = b !? p
 isFinished :: Game -> Bool
 isFinished = isLeft
 
-isDraw :: Finished -> Bool
-isDraw f = case whoWon f of
-             Draw -> True
-             _    -> False
-
 whoWon :: Finished -> Outcome
 whoWon (Finished _ o) = o
 
