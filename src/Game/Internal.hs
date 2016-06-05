@@ -6,7 +6,6 @@ module Game.Internal where
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.Either (isLeft)
 import Data.List (find, intercalate, intersperse)
-import Data.Maybe (listToMaybe)
 
 type Game       = Either Finished Unfinished
 type Board      = Array Position Cell
@@ -94,10 +93,11 @@ b !? p
  | otherwise  = Nothing
 
 move' :: Position -> Unfinished -> Unfinished
-move' pos u@(Unfinished b p) =
-  case b !? pos of
-    Just Unclaimed -> Unfinished (b // [(pos, Claimed p)]) $ opposite p
-    _              -> u
+move' pos u@(Unfinished b p) = maybe u (place pos b p) (b !? pos)
+
+place :: Position -> Board -> Player -> Cell -> Unfinished
+place pos b p Unclaimed = Unfinished (b // [(pos, Claimed p)]) $ opposite p
+place _   b p _         = Unfinished b p
 
 opposite :: Player -> Player
 opposite X = O
@@ -122,8 +122,8 @@ isAllClaimedBy :: Player -> Straight -> Bool
 isAllClaimedBy = all . isClaimedBy
 
 isClaimedBy :: Player -> Cell -> Bool
-isClaimedBy _ Unclaimed    = False
 isClaimedBy m (Claimed m') = m == m'
+isClaimedBy _ _            = False
 
 isClaimed :: Cell -> Bool
 isClaimed Unclaimed = False
@@ -132,11 +132,9 @@ isClaimed _         = True
 winner :: Board -> Outcome
 winner = maybe Draw winner' . find isAllClaimed . straights
     where
-  winner' s = Won $
-    case listToMaybe s of
-      Just (Claimed p) -> p
-      Just Unclaimed   -> X
-      Nothing          -> X
+  winner' (Claimed p:_) = Won p
+  winner' (_        :_) = error "isAllClaimed straight contains unclaimed cells"
+  winner' _             = error "isAllClaimed straight is empty"
 
 straights :: Board -> [Straight]
 straights b = concatMap ($ b) [rows, columns, diagonals]
