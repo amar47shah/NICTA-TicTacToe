@@ -43,7 +43,10 @@ tryTurn game =
         pure (game >>= move pos)
 
 randomTurn :: Turn
-randomTurn = either (pure . Left) randomMove
+randomTurn game =
+  print game >>
+    printLine >>
+      either (pure . Left) randomMove game
 
 getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
