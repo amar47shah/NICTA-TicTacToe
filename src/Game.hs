@@ -7,6 +7,7 @@ module Game ( Game
             , isFinished
             , bounds
             , openPositions
+            , marks
             ) where
 
 import Game.Internal

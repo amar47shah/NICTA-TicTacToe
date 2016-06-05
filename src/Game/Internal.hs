@@ -57,6 +57,9 @@ playerAt p (Right (Unfinished b _)) = b !? p
 isFinished :: Game -> Bool
 isFinished = isLeft
 
+marks :: (String, String)
+marks = (show X, show O)
+
 whoWon :: Finished -> Outcome
 whoWon (Finished _ o) = o
 

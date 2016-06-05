@@ -1,6 +1,6 @@
 module Main where
 
-import Game (Game, Position, Coordinate, move, isFinished, start, bounds)
+import Game (Game, Position, Coordinate, move, isFinished, start, bounds, marks)
 import Opponent (randomMove)
 
 import Control.Monad (join)
@@ -12,15 +12,18 @@ main :: IO ()
 main =
   printLine >>
     getTurns >>= \turns ->
-      untilM2 isFinished turns start >>=
-        print >>
-          pure ()
+      printLine >>
+        untilM2 isFinished turns start >>=
+          print >>
+            pure ()
 
 type Turn = Game -> IO Game
 data PlayerType = H | C deriving Read
 
 getTurns :: IO (Turn, Turn)
-getTurns = (,) <$> getTurn "X" <*> getTurn "O"
+getTurns =
+  putStrLn "(H)uman  or\n(C)omputer?" >>
+      (,) <$> getTurn (fst marks) <*> getTurn (snd marks)
 
 getTurn :: String -> IO Turn
 getTurn m = turn . fromJust <$> getInput isJust ("Player " ++ m)
