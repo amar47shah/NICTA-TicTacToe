@@ -5,13 +5,14 @@ import Game.Internal
 import System.Random (getStdRandom, randomR)
 
 randomTurn :: Game -> IO Game
-randomTurn g = (g >>=) <$> randomMove
+randomTurn = either (pure . Left) randomMove
 
-randomMove :: IO (Unfinished -> Game)
-randomMove = move <$> randomPosition
+randomMove :: Unfinished -> IO Game
+randomMove u = move <$> randomPosition u <*> pure u
 
-randomPosition :: IO Position
-randomPosition = (,) <$> randomCoordinate <*> randomCoordinate
+randomPosition :: Unfinished -> IO Position
+randomPosition = pick . openPositions
 
-randomCoordinate :: IO Coordinate
-randomCoordinate = getStdRandom . randomR $ (lower, upper)
+pick :: [a] -> IO a
+pick [] = error "cannot pick from empty list"
+pick xs = (xs !!) <$> (getStdRandom . randomR) (0, pred $ length xs)

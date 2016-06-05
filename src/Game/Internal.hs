@@ -3,7 +3,7 @@
 
 module Game.Internal where
 
-import Data.Array (Array, (!), (//), elems, listArray)
+import Data.Array (Array, (!), (//), elems, indices, listArray)
 import Data.Either (isLeft)
 import Data.List (find, intercalate, intersperse)
 
@@ -102,6 +102,9 @@ place _   b p _         = Unfinished b p
 opposite :: Player -> Player
 opposite X = O
 opposite O = X
+
+openPositions :: Unfinished -> [Position]
+openPositions (Unfinished b _) = filter (not . isClaimed . (b !)) $ indices b
 
 next :: Unfinished -> Game
 next u@(Unfinished b _)
