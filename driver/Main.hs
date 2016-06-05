@@ -1,7 +1,7 @@
 module Main where
 
 import Game (Game, Position, Coordinate, move, isFinished, start, bounds)
-import Opponent (randomTurn)
+import Opponent (randomMove)
 
 import Control.Monad (join)
 import Data.Maybe (fromJust)
@@ -15,15 +15,20 @@ main =
       print >>
         pure ()
 
-takeTurn :: Game -> IO Game
+type Turn = Game -> IO Game
+
+takeTurn :: Turn
 takeTurn game = untilM (/= game) tryTurn game
 
-tryTurn :: Game -> IO Game
+tryTurn :: Turn
 tryTurn game =
   print game >>
     getPosition >>= \pos ->
       printLine >>
         pure (game >>= move pos)
+
+randomTurn :: Turn
+randomTurn = either (pure . Left) randomMove
 
 getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"

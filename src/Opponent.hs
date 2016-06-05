@@ -1,11 +1,8 @@
-module Opponent (randomTurn) where
+module Opponent (randomMove) where
 
 import Game (Game, Unfinished, Position, move, openPositions)
 
 import System.Random (getStdRandom, randomR)
-
-randomTurn :: Game -> IO Game
-randomTurn = either (pure . Left) randomMove
 
 randomMove :: Unfinished -> IO Game
 randomMove u = move <$> randomPosition u <*> pure u
