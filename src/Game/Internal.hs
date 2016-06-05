@@ -49,7 +49,7 @@ start :: Game
 start = Right $ Unfinished empty X
 
 move :: Position -> Unfinished -> Game
-move p (Unfinished b m) = next $ move' p m b
+move = (next .) . move'
 
 playerAt :: Position -> Game -> Maybe Cell
 playerAt p (Left  (Finished   b _)) = b !? p
@@ -93,11 +93,11 @@ b !? p
  | inBounds p = Just $ b ! p
  | otherwise  = Nothing
 
-move' :: Position -> Player -> Board -> Unfinished
-move' p m b =
-  case b !? p of
-    Just Unclaimed -> Unfinished (b // [(p, Claimed m)]) $ opposite m
-    _              -> Unfinished b m
+move' :: Position -> Unfinished -> Unfinished
+move' pos u@(Unfinished b p) =
+  case b !? pos of
+    Just Unclaimed -> Unfinished (b // [(pos, Claimed p)]) $ opposite p
+    _              -> u
 
 opposite :: Player -> Player
 opposite X = O
