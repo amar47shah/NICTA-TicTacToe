@@ -13,9 +13,9 @@ type Position   = (Coordinate, Coordinate)
 type Coordinate = Int
 type Straight   = [Cell]
 
-data Finished   = Finished Board Outcome
-data Unfinished = Unfinished Board Player
-data Outcome    = Draw | Won Player
+data Finished   = Finished Board Outcome     deriving Eq
+data Unfinished = Unfinished Board Player    deriving Eq
+data Outcome    = Draw | Won Player          deriving Eq
 data Cell       = Unclaimed | Claimed Player deriving (Eq, Show)
 data Player     = X | O                      deriving (Eq, Show)
 
