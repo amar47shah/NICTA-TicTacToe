@@ -4,18 +4,34 @@ import Game (Game, Position, Coordinate, move, isFinished, start, bounds)
 import Opponent (randomMove)
 
 import Control.Monad (join)
-import Data.Maybe (fromJust)
+import Data.Maybe (fromJust, isJust)
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
 
 main :: IO ()
 main =
   printLine >>
-    untilM2 isFinished (randomTurn, takeTurn) start >>=
-      print >>
-        pure ()
+    getTurns >>= \turns ->
+      untilM2 isFinished turns start >>=
+        print >>
+          pure ()
 
 type Turn = Game -> IO Game
+data PlayerType = H | C deriving Read
+
+getTurns :: IO (Turn, Turn)
+getTurns = (,) <$> getTurn "X" <*> getTurn "O"
+
+getTurn :: String -> IO Turn
+getTurn p =
+  turn . fromJust <$> untilM isJust (const $ promptPlayerType p) Nothing
+
+promptPlayerType :: String -> IO (Maybe PlayerType)
+promptPlayerType p = prompt p >> fmap readMaybe getLine
+
+turn :: PlayerType -> Turn
+turn H = takeTurn
+turn C = randomTurn
 
 takeTurn :: Turn
 takeTurn game = untilM (/= game) tryTurn game
