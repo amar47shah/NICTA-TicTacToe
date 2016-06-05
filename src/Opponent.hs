@@ -1,6 +1,6 @@
-module Opponent where
+module Opponent (randomTurn) where
 
-import Game.Internal
+import Game (Game, Unfinished, Position, move, openPositions)
 
 import System.Random (getStdRandom, randomR)
 
