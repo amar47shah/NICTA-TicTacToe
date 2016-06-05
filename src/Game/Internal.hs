@@ -33,13 +33,13 @@ instance {-# OVERLAPPING #-} Show Board where
   show = intercalate "\n"
        . intersperse bar
        . (intercalate " | " <$>)
-       . ((display <$>) <$>)
+       . ((mark <$>) <$>)
        . rows
     where bar :: String
           bar = concat $ "-" : replicate (upper - lower) "-|--"
-          display :: Cell -> String
-          display (Claimed m) = show m
-          display _           = "·"
+          mark :: Cell -> String
+          mark (Claimed p) = show p
+          mark _           = "·"
 
 instance Show Outcome where
   show Draw    = "DRAW"
