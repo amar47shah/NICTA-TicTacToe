@@ -6,17 +6,17 @@ module Game.Internal where
 import Data.Array (Array, (!), (//), elems, listArray)
 import Data.Either (isLeft)
 import Data.List (find, intercalate, intersperse)
-import Data.Maybe (isNothing)
+import Data.Maybe (listToMaybe)
 
 type Game = Either Finished Unfinished
 type Board = Array Position Cell
-type Winner = Maybe Player
 type Position = (Coordinate, Coordinate)
 type Coordinate = Int
 type Straight = [Cell]
 
-data Finished = Finished Board Winner
+data Finished = Finished Board Outcome
 data Unfinished = Unfinished Board Player
+data Outcome = Draw | Winner Player
 data Cell = Unclaimed | Claimed Player deriving (Eq, Show)
 data Player = X | O deriving (Eq, Show)
 
@@ -24,23 +24,26 @@ instance {-# OVERLAPPING #-} Show Game where
   show = either show show
 
 instance Show Finished where
-  show (Finished b Nothing)  = show b ++ "\nDRAW"
-  show (Finished b (Just m)) = show b ++ "\nWINNER: " ++ show m
+  show (Finished b o)   = show b ++ '\n' : show o
 
 instance Show Unfinished where
-  show (Unfinished b m) = show b ++ "\n" ++ show m ++ " to play"
+  show (Unfinished b p) = show b ++ '\n' : show p ++ " to play"
 
 instance {-# OVERLAPPING #-} Show Board where
   show = intercalate "\n"
        . intersperse bar
        . (intercalate " | " <$>)
-       . ((draw <$>) <$>)
+       . ((display <$>) <$>)
        . rows
     where bar :: String
           bar = concat $ "-" : replicate (upper - lower) "-|--"
-          draw :: Cell -> String
-          draw (Claimed m) = show m
-          draw _           = "·"
+          display :: Cell -> String
+          display (Claimed m) = show m
+          display _           = "·"
+
+instance Show Outcome where
+  show Draw       = "DRAW"
+  show (Winner m) = "WINNER: " ++ show m
 
 start :: Game
 start = Right $ Unfinished empty X
@@ -56,10 +59,12 @@ isFinished :: Game -> Bool
 isFinished = isLeft
 
 isDraw :: Finished -> Bool
-isDraw = isNothing . whoWon
+isDraw f = case whoWon f of
+             Draw -> True
+             _    -> False
 
-whoWon :: Finished -> Winner
-whoWon (Finished _ w) = w
+whoWon :: Finished -> Outcome
+whoWon (Finished _ o) = o
 
 sample :: Game
 sample = start >>=
@@ -105,8 +110,8 @@ opposite O = X
 
 next :: Unfinished -> Game
 next u@(Unfinished b _)
- | isWon  b  = Left . Finished b $ whoWon' b
- | isFull b  = Left $ Finished b Nothing
+ | isWon  b  = Left . Finished b $ winner b
+ | isFull b  = Left $ Finished b Draw
  | otherwise = Right u
 
 isFull :: Board -> Bool
@@ -129,10 +134,14 @@ isClaimed :: Cell -> Bool
 isClaimed Unclaimed = False
 isClaimed _         = True
 
-whoWon' :: Board -> Winner
-whoWon' b =
-  find isAllClaimed (straights b) >>=
-    (\s -> if isAllClaimedBy X s then Just X else Just O)
+winner :: Board -> Outcome
+winner = maybe Draw winner' . find isAllClaimed . straights
+    where
+  winner' s = Winner $
+    case listToMaybe s of
+      Just (Claimed p) -> p
+      Just Unclaimed   -> X
+      Nothing          -> X
 
 straights :: Board -> [Straight]
 straights b = concatMap ($ b) [rows, columns, diagonals]

@@ -67,11 +67,11 @@ board = boardFromCells <$> QC.infiniteListOf cell
 unfinished :: QC.Gen Unfinished
 unfinished = Unfinished <$> board <*> player
 
-winner :: QC.Gen Winner
-winner = QC.oneof [pure Nothing, Just <$> player]
+outcome :: QC.Gen Outcome
+outcome = QC.oneof [pure Draw, Winner <$> player]
 
 finished :: QC.Gen Finished
-finished = Finished <$> board <*> winner
+finished = Finished <$> board <*> outcome
 
 game :: QC.Gen Game
 game = QC.oneof [Left <$> finished, Right <$> unfinished]
