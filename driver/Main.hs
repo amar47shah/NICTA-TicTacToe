@@ -4,7 +4,7 @@ import Game (Game, Position, Coordinate, move, isFinished, start, bounds)
 import Opponent (randomTurn)
 
 import Control.Monad (join)
-import Data.Maybe (fromMaybe)
+import Data.Maybe (fromJust)
 import System.IO (hFlush, stdout)
 import Text.Read (readMaybe)
 
@@ -29,16 +29,14 @@ getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
 
 getCoord :: String -> IO Coordinate
-getCoord p = untilM (`elem` bounds) (const $ promptCoord p) badCoord
+getCoord p = fromJust <$> untilM isCoord (const $ promptCoord p) Nothing
 
-promptCoord :: String -> IO Coordinate
-promptCoord p = prompt p >> fmap readCoord getLine
+isCoord :: Maybe Coordinate -> Bool
+isCoord (Just c) = c `elem` bounds
+isCoord _        = False
 
-readCoord :: String -> Coordinate
-readCoord = fromMaybe badCoord . readMaybe
-
-badCoord :: Coordinate
-badCoord = -1
+promptCoord :: String -> IO (Maybe Coordinate)
+promptCoord p = prompt p >> fmap readMaybe getLine
 
 prompt :: String -> IO ()
 prompt p = putStr (padRight 8 (p ++ ": ")) >> hFlush stdout
