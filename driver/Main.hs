@@ -36,7 +36,10 @@ badCoord :: Coordinate
 badCoord = -1
 
 prompt :: String -> IO ()
-prompt p = putStr (p ++ ": ") >> hFlush stdout
+prompt p = putStr (padRight 8 (p ++ ": ")) >> hFlush stdout
+
+padRight :: Int -> String -> String
+padRight n s = s ++ replicate (n - length s) ' '
 
 printLine :: IO ()
 printLine = putStrLn "\n"
