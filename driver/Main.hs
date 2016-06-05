@@ -23,11 +23,7 @@ getTurns :: IO (Turn, Turn)
 getTurns = (,) <$> getTurn "X" <*> getTurn "O"
 
 getTurn :: String -> IO Turn
-getTurn p =
-  turn . fromJust <$> untilM isJust (const $ promptPlayerType p) Nothing
-
-promptPlayerType :: String -> IO (Maybe PlayerType)
-promptPlayerType p = prompt p >> fmap readMaybe getLine
+getTurn m = turn . fromJust <$> getInput isJust ("Player " ++ m)
 
 turn :: PlayerType -> Turn
 turn H = takeTurn
@@ -50,14 +46,17 @@ getPosition :: IO Position
 getPosition = (,) <$> getCoord "ROW" <*> getCoord "COLUMN"
 
 getCoord :: String -> IO Coordinate
-getCoord p = fromJust <$> untilM isCoord (const $ promptCoord p) Nothing
+getCoord = (fromJust <$>) . getInput isCoord
 
 isCoord :: Maybe Coordinate -> Bool
 isCoord (Just c) = c `elem` bounds
 isCoord _        = False
 
-promptCoord :: String -> IO (Maybe Coordinate)
-promptCoord p = prompt p >> fmap readMaybe getLine
+getInput :: Read a => (Maybe a -> Bool) -> String -> IO (Maybe a)
+getInput c p = untilM c (const $ promptLine p) Nothing
+
+promptLine :: Read a => String -> IO (Maybe a)
+promptLine p = prompt p >> fmap readMaybe getLine
 
 prompt :: String -> IO ()
 prompt p = putStr (padRight 8 (p ++ ": ")) >> hFlush stdout
