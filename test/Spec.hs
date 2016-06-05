@@ -28,6 +28,7 @@ qcProps = testGroup "QuickCheck"
   , QC.testProperty "one move doesn't finish a game" propOneMoveGameUnfinished
   , QC.testProperty "first move claims a cell for X" propFirstMoveForX
   , QC.testProperty "second turn for O"              propSecondTurnForO
+  , QC.testProperty "can't move to claimed cell"     propNoMoveToClaimed
   ]
 
 propGameStartsEmpty :: QC.Property
@@ -45,6 +46,11 @@ propFirstMoveForX =
 propSecondTurnForO :: QC.Property
 propSecondTurnForO =
   QC.forAll pos $ \p -> (\(Right (Unfinished _ m)) -> m == O) (start >>= move p)
+
+propNoMoveToClaimed :: QC.Property
+propNoMoveToClaimed =
+  QC.forAll pos $
+    \p -> let Right (Unfinished _ pl) = start >>= move p >>= move p in pl == O
 
 coord :: QC.Gen Coordinate
 coord = QC.choose (lower, upper)
